@@ -4,6 +4,8 @@ import 'package:expense_tracker/widgets/new_expense.dart';
 import 'package:expense_tracker/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker/models/expense.dart';
 import 'package:expense_tracker/widgets/chart/chart.dart';
+import 'package:expense_tracker/widgets/summary_card.dart';
+import 'package:expense_tracker/widgets/category_filter.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -29,6 +31,14 @@ class _ExpensesState extends State<Expenses> {
       category: Category.leisure,
     ),
   ];
+
+  Category? _selectedCategory;
+
+  List<Expense> get _visibleExpenses => _selectedCategory == null
+      ? _registeredExpenses
+      : _registeredExpenses
+          .where((expense) => expense.category == _selectedCategory)
+          .toList();
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
@@ -71,13 +81,22 @@ class _ExpensesState extends State<Expenses> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
+    final filter = CategoryFilter(
+      selected: _selectedCategory,
+      onSelected: (category) {
+        setState(() {
+          _selectedCategory = category;
+        });
+      },
+    );
+
     Widget mainContent = const Center(
       child: Text('No expenses found. Start adding some!'),
     );
 
-    if (_registeredExpenses.isNotEmpty) {
+    if (_visibleExpenses.isNotEmpty) {
       mainContent = ExpensesList(
-        expenses: _registeredExpenses,
+        expenses: _visibleExpenses,
         onRemoveExpense: _removeExpense,
       );
     }
@@ -96,19 +115,37 @@ class _ExpensesState extends State<Expenses> {
           ? Column(
               children: [
                 Chart(expenses: _registeredExpenses),
+                SummaryCard(expenses: _visibleExpenses),
+                filter,
                 Expanded(
                   child: mainContent,
                 ),
               ],
             )
-          : Row(children: [
-              Expanded(
-                child: Chart(expenses: _registeredExpenses),
-              ),
-              Expanded(
-                child: mainContent,
-              ),
-            ]),
+          : Row(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Chart(expenses: _registeredExpenses),
+                        SummaryCard(expenses: _visibleExpenses),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      filter,
+                      Expanded(
+                        child: mainContent,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
