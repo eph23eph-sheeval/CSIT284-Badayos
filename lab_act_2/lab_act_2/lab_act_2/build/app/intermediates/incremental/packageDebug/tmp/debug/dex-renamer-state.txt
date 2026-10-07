@@ -1,0 +1,16 @@
+#Wed Aug 26 16:37:21 SGT 2026
+base.0=C\:\\Users\\l12x16w31\\Documents\\flutter_apps\\lab_act_2\\lab_act_2\\lab_act_2\\build\\app\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\l12x16w31\\Documents\\flutter_apps\\lab_act_2\\lab_act_2\\lab_act_2\\build\\app\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\l12x16w31\\Documents\\flutter_apps\\lab_act_2\\lab_act_2\\lab_act_2\\build\\app\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex
+base.3=C\:\\Users\\l12x16w31\\Documents\\flutter_apps\\lab_act_2\\lab_act_2\\lab_act_2\\build\\app\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex
+base.4=C\:\\Users\\l12x16w31\\Documents\\flutter_apps\\lab_act_2\\lab_act_2\\lab_act_2\\build\\app\\intermediates\\global_synthetics_dex\\debug\\mergeDebugGlobalSynthetics\\classes.dex
+path.0=classes.dex
+path.1=0/classes.dex
+path.2=11/classes.dex
+path.3=1/classes.dex
+path.4=classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
+renamed.2=classes3.dex
+renamed.3=classes4.dex
+renamed.4=classes5.dex
