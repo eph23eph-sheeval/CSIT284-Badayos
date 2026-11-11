@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import 'package:shopping_list/models/grocery_item.dart';
@@ -15,20 +18,37 @@ class _NewItemState extends State<NewItem>{
   final _formKey = GlobalKey<FormState>();
   var _enteredName = '';
   var _enteredQuantity = 1;
-  var _selectedCategory = categories[Categories.vegetables];
+  var selectedCategory = categories[Categories.vegetables];
  
-  void _saveItem() {
-    if (_formKey.currentState!.validate()) {
-    _formKey.currentState!.save();
-    Navigator.of(context).pop(
-      GroceryItem(
-        id: DateTime.now().toString(),
-         name: _enteredName,
+  void _saveItem() async{
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+
+      final url = Uri.https(
+        'flotter-apps-default-rtdb.asia-southeast1.firebasedatabase.app',
+        'shopping-list.json'
+      );
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type' : 'application/json'},
+        body: json.encode({
+          'name': _enteredName,
+          'quantity': _enteredQuantity,
+          'category': selectedCategory!.title,
+        })
+      );
+        final Map<String, dynamic> resData = json.decode(response.body);
+      Navigator.of( context).pop(
+        GroceryItem(
+          id: resData ['name'],
+          name: _enteredName,
           quantity: _enteredQuantity,
-           category: _selectedCategory!,
-           )
+          category: selectedCategory!,
+        )
       );
     }
+   
   }
   @override
   Widget build(BuildContext context) {
@@ -44,9 +64,11 @@ class _NewItemState extends State<NewItem>{
           TextFormField(
             maxLength: 50,
             decoration: InputDecoration(
-              label: Text('Name'),
-              
+              label: const Text('Name'),
             ),
+            onSaved: (value) {
+              _enteredName = value!;
+            },
             validator: (value) {
               if (value == null || value.isEmpty || value.trim().length <= 1) {
                 return 'Name must not be empty';
@@ -61,16 +83,16 @@ class _NewItemState extends State<NewItem>{
                 child: TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    label: Text('Quantity'),
+                    label: const Text('Quantity'),
                   ),
                   initialValue: _enteredQuantity.toString(),
-                  onSaved: (value){
+                  onSaved: (value) {
                     _enteredQuantity = int.parse(value!);
                   },
                   validator: (value) {
                     if (value == null ||
                         int.tryParse(value) == null ||
-                        int.parse(value)! <= 0) {
+                        int.parse(value) <= 0) {
                       return 'Input must be number';
                     }
                     return null;
@@ -80,7 +102,8 @@ class _NewItemState extends State<NewItem>{
               const SizedBox(width: 8),
               Expanded(
                 child: DropdownButtonFormField(
-                  initialValue: _selectedCategory,
+                  initialValue: selectedCategory,
+                  value: selectedCategory,
                   items: [
                     for (final category in categories.values)
                       DropdownMenuItem(
@@ -100,7 +123,7 @@ class _NewItemState extends State<NewItem>{
                   ],
                   onChanged: (value) {
                     setState(() {
-                      _selectedCategory = value!;
+                      selectedCategory = value!;
                     });
                   },
                 ),
